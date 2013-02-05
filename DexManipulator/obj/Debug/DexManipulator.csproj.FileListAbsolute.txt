@@ -1,0 +1,5 @@
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\DexManipulator\bin\Debug\DexManipulator.dll
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\DexManipulator\bin\Debug\DexManipulator.pdb
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\DexManipulator\obj\Debug\DexManipulator.csprojResolveAssemblyReference.cache
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\DexManipulator\obj\Debug\DexManipulator.dll
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\DexManipulator\obj\Debug\DexManipulator.pdb
