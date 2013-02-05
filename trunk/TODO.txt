@@ -1,0 +1,31 @@
+DEX 파일 읽어내기
+ - 헤더 읽기
+ - 스트링 읽기
+  - MUTF-8(CESU-8 + C0 80으로 U+0000을 나타냄)을 UTF-8 스트링으로 변환하는 장치가 필요함
+ - 타입 읽기
+  - Type string 파싱
+ - 프로토타입 읽기
+  - Prototype string 파싱
+ - 필드 읽기
+ - 메서드 읽기
+ - 클래스 정의 읽기
+  - 억세스 플래그 C#식으로 번역
+  - 인터페이스 읽어오기
+  - 어노테이션 데이터 읽기
+  - 클래스 데이터 읽기
+   - ULEB128 읽기
+   - encoded_field와 encoded_method 읽기
+ - 맵 세션 읽기
+
+cf. 키워드들에 대응하는 C# 언어(키워드가 없으면 access_flags로 치자)
+ - public, private, protected, static, volatile(필드), abstract, interface: 더 이상의 자세한 설명은 생략한다.
+ - final: 클래스/메서드는 sealed, 필드는 readonly
+ - synchronized: [MethodImpl(MethodImplOptions.Synchronized] (별로 좋은 방법은 아니라고 함.)
+ - transient: [NonSerialized]
+ - ACC_VARARGS: params(자세한건 찾아보자)
+ - ACC_NATIVE: 답이 없다. ARM 에뮬레이터 하나 만들어야 할 기세?
+ - ACC_STRICT: 답이 없다. 별수없지, 경고때리고 걍 무시하는 수밖에.
+ - ACC_BRIDGE, ACC_SYNTHETIC: 무시때리자
+ - ACC_ANNOTATION: ?????? 공부가 필요할 듯
+ - ACC_ENUM: enum 지시어를 사용할 수 있긴 한데 좀 복잡한 변환이 필요함.
+ - ACC_CONSTRUCTOR: 클래스이름 때려박기
