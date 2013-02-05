@@ -1,0 +1,8 @@
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\bin\Debug\UnicodeHandlingTest.exe.config
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\bin\Debug\UnicodeHandlingTest.exe
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\bin\Debug\UnicodeHandlingTest.pdb
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\obj\Debug\UnicodeHandlingTest.csprojResolveAssemblyReference.cache
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\obj\Debug\UnicodeHandlingTest.exe
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\obj\Debug\UnicodeHandlingTest.pdb
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\bin\Debug\DexManipulator.dll
+C:\Users\Ash\documents\visual studio 2012\Projects\DalvikCLR\UnicodeHandlingTest\bin\Debug\DexManipulator.pdb
