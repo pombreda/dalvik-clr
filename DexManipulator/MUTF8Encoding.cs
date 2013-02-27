@@ -61,6 +61,8 @@ namespace DexManipulator
             int retval = 0;
             while (i < bound)
             {
+                if (bytes[i] == 0)
+                    break;
                 if ((bytes[i] & 0x80) == 0)
                 {
                     // ASCII Code: 1 byte to 1 character.
@@ -82,7 +84,7 @@ namespace DexManipulator
                 else
                 {
                     // MUTF-8 does NOT have a code with four or more bytes.
-                    throw new DecoderFallbackException();
+                    throw new DecoderFallbackException("A UTF-8 string using more than three bytes for a character is fed.", bytes, i);
                 }
             }
 
@@ -115,7 +117,7 @@ namespace DexManipulator
                     try
                     {
                         if ((bytes[i + 1] & 0xC0) != 0x80 || (bytes[i + 2] & 0xC0) != 0x80)
-                            throw new DecoderFallbackException(); // This is not even a UTF-8 string!
+                            throw new DecoderFallbackException("Lead surrogate exists, but trail surrogate does not follow it.", bytes, i);
                         k = (bytes[i] & 0x0F);
                         k <<= 6;
                         k |= (bytes[i + 1] & 0x3F);
@@ -128,15 +130,15 @@ namespace DexManipulator
                             SurrogateStorage |= 0x10000; // Glue surrogate result with surrogate start.
                         }
                         else
-                            throw new DecoderFallbackException(); // This is not a valid CESU-8 string.
+                            throw new DecoderFallbackException("Lead surrogate exists, but the following character is not a trail surrogate.", bytes, i);
 
                         SurrogateBuffer = char.ConvertFromUtf32(SurrogateStorage);
                         chars[j - 1] = SurrogateBuffer[0];
                         chars[j] = SurrogateBuffer[1];
                     }
-                    catch (IndexOutOfRangeException e)
+                    catch (IndexOutOfRangeException)
                     {
-                        throw new DecoderFallbackException();
+                        throw new DecoderFallbackException("Trail surrogate expected, but unexpected end of data", bytes, i);
                     }
                     i += 3;
                     SurrogateStorage = 0;
@@ -144,6 +146,8 @@ namespace DexManipulator
                 else if ((bytes[i] & 0x80) == 0)
                 {
                     // ASCII Code: 1 byte to 1 character.
+                    if (bytes[i] == 0)
+                        break;
                     chars[j] = char.ConvertFromUtf32(bytes[i])[0];
                     i++;
                 }
@@ -153,7 +157,7 @@ namespace DexManipulator
                     try
                     {
                         if ((bytes[i + 1] & 0xC0) != 0x80)
-                            throw new DecoderFallbackException(); // This is not even a UTF-8 string!
+                            throw new DecoderFallbackException("Trail bytes don't have the format expected in UTF-8.", bytes, i); // This is not even a UTF-8 string!
                         k = (bytes[i] & 0x1F);
                         k <<= 6;
                         k |= (bytes[i + 1] & 0x3F);
@@ -161,7 +165,7 @@ namespace DexManipulator
                     }
                     catch (IndexOutOfRangeException e)
                     {
-                        throw new DecoderFallbackException();
+                        throw new DecoderFallbackException("Trail bytes expected, but unexpected end of data", bytes, i);
                     }
                     i += 2;
                 }
@@ -187,21 +191,21 @@ namespace DexManipulator
                         }
                         else if (k >= TrailSurrogateMin && k <= TrailSurrogateMax)
                         {
-                            throw new DecoderFallbackException(); // This is not a valid CESU-8 string.
+                            throw new DecoderFallbackException("Lead surrogate expected, but trail surrogate comes first", bytes, i);
                         }
                         else
                             chars[j] = char.ConvertFromUtf32(k)[0];
                     }
                     catch (IndexOutOfRangeException e)
                     {
-                        throw new DecoderFallbackException();
+                        throw new DecoderFallbackException("Lead surrogate expected, but unexpected end of data", bytes, i);
                     }
                     i += 3;
                 }
                 else
                 {
                     // MUTF-8 does NOT have a code with four or more bytes.
-                    throw new DecoderFallbackException();
+                    throw new DecoderFallbackException("A UTF-8 string using more than three bytes for a character is fed.", bytes, i);
                 }
                 j++;
             }
@@ -216,6 +220,14 @@ namespace DexManipulator
         public override int GetMaxCharCount(int byteCount)
         {
             return byteCount;
+        }
+
+        public override string EncodingName
+        {
+            get
+            {
+                return "Modified UTF-8";
+            }
         }
     }
 }
