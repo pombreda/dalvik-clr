@@ -10,14 +10,16 @@ namespace DexManipulator
 {
     public class DalvikProgram
     {
-        public readonly string[] StringList;
         enum Endianness
         {
             ENDIAN_NOT_SET,
             ENDIAN_LITTLE,
             ENDIAN_BIG
         }
+
+        public readonly string[] StringList;
         readonly Endianness endianness;
+        MUTF8Encoding stringdec;
 
         #region array constants
         public static byte[] magic
@@ -51,6 +53,37 @@ namespace DexManipulator
                 || endianness == Endianness.ENDIAN_LITTLE && !BitConverter.IsLittleEndian)
                 Array.Reverse(buffer);
             return BitConverter.ToUInt32(buffer, 0);
+        }
+
+        uint ReadULEB128(FileStream source)
+        {
+            int buffer;
+            int offset = 0;
+            uint result = 0;
+            while (true)
+            {
+                buffer = source.ReadByte();
+                if (buffer < 0)
+                    throw new InvalidDataException("ULEB128 sequence expected, but end of file is reached.");
+                result |= ((uint)(buffer & 0x7F)) << offset;
+                offset += 7;
+                if ((buffer & 0x80) == 0)
+                    break;
+            }
+            return result;
+        }
+
+        private async Task<string> AsyncReadStringEntry(FileStream source, uint offset)
+        {
+            source.Seek(offset, SeekOrigin.Begin);
+            uint strlen = ReadULEB128(source);
+            byte[] buffer = new byte[stringdec.GetMaxByteCount((int)strlen)];
+            int result = await source.ReadAsync(buffer, 0, buffer.Length);
+            int bytelen;
+            for (bytelen = 0; bytelen < result; bytelen++)
+                if (buffer[bytelen] == 0)
+                    break;
+            return stringdec.GetString(buffer);
         }
 
         public DalvikProgram(string filename)
@@ -102,6 +135,26 @@ namespace DexManipulator
                 throw new InvalidProgramException("Illegal SHA-1 Hash");
 
             // Verify file size
+            uint filesize = ReadUInt(bytecode_source);
+            if (filesize != bytecode_source.Length)
+                throw new InvalidProgramException("File length does not match the actual file size.");
+
+            // Ignore link section and map section.
+            bytecode_source.Seek(20, SeekOrigin.Current);
+
+            // Begin reading string section.
+            StringList = new string[ReadUInt(bytecode_source)];
+            uint string_id_offset = ReadUInt(bytecode_source);
+            bytecode_source.Seek(string_id_offset, SeekOrigin.Begin);
+            stringdec = new MUTF8Encoding();
+            using (int length = StringList.Length)
+            {
+
+            }
+            
+            // Begin reading Type ID section.
+            // Notice that the file stream should be seeked into the former place.
+            bytecode_source.Seek(64, SeekOrigin.Begin);
         }
 
         public static string ConvertFullyQualifiedName(string classname)
