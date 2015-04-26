@@ -1,0 +1,2 @@
+# Program Summary #
+A program for decomposing Dalvik bytecodes (and ultimately Android) and reprogramming into CLR-readable binary(.NET Framework binary). Generates a C# language file for intermediate.
